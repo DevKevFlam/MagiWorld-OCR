@@ -13,64 +13,13 @@ import java.util.Scanner;
 
 public class Controller {
 
-    /**
-     * Scanner pour saisie User
-     */
-    public static Scanner sc = new Scanner(System.in);
+    private Saisie sc = new Saisie();
+
 
     /**
      * Constante de Séparation Console
      */
     private static final String LINE_SEPARATOR = "+------------------------------------------------------------+";
-
-    /////////////////////////////////////////////////////////////////////////////////
-    //Methodes de saisie
-    /**
-     * Boucle de saisie d'un Entier
-     *
-     * @return Entier Corespondant au choix de l'utilisateur
-     */
-    private int saisirInt() {
-        int choix = 0;
-        Boolean test;
-        do {
-            test = false;
-            try {
-                choix = Controller.sc.nextInt();
-            } catch (InputMismatchException e) {
-                // System.out.println("Error: 1 EXPLODE STRING!!!!! " + e.getClass().getName());
-                test = true;
-            } catch (NoSuchElementException e) {
-                // System.out.println("Error: 2 EXPLODE STRING!!!!! " + e.getClass().getName());
-                test = true;
-            } catch (IllegalStateException e) {
-                // System.out.println("Error: 3 EXPLODE STRING!!!!! " + e.getClass().getName());
-                test = true;
-            } finally {
-                sc.nextLine();
-            }
-        } while (test);
-        return choix;
-    }
-
-    /**
-     * Demande de réponse binaire (oui ou non), Boucle de saisie d'un Boolean
-     *
-     * @return : True si Oui , False si non
-     */
-    private boolean demandeOuiNon() {
-
-        Boolean ok = false;
-
-        int choix;
-        do {
-            System.out.println("1 : OUI        0 : NON");
-            choix = this.saisirInt();
-        } while (choix != 0 && choix != 1);
-        ok = (choix == 1);
-
-        return ok;
-    }
 
     /////////////////////////////////////////////////////////////////////////////////
     //Methode de test
@@ -137,7 +86,7 @@ public class Controller {
         Personnage joueur = null;
         do {
             System.out.println("Veuillez choisir la classe de votre personnage (1: Guerrier, 2: Rôdeur, 3: Mage.)");
-            choix = this.saisirInt();
+            choix = sc.saisirInt();
             switch (choix) {
                 case 1:
                     continuerSaisie = false;
@@ -156,7 +105,7 @@ public class Controller {
                     System.out.println("Mauvaise Saisie !!!");
                     break;
             }
-            Controller.sc.reset();
+
         } while (continuerSaisie);
         return joueur;
     }
@@ -172,7 +121,7 @@ public class Controller {
         do {
             System.out.println("Niveau du personnage ? (de 1 à 100)");
             try {
-                joueur.setNiveau(this.saisirInt());
+                joueur.setNiveau(sc.saisirInt());
                 continuerSaisie = false;
             } catch (wrongStatInitException e) {
                 System.out.println(e.getMessage());
@@ -194,7 +143,7 @@ public class Controller {
         do {
             System.out.println("Force du personnage ?           Vous avez " + maxPoint + "points à distribuer.");
             try {
-                joueur.setForce(this.saisirInt());
+                joueur.setForce(sc.saisirInt());
                 continuerSaisie = false;
             } catch (wrongStatInitException e) {
                 System.out.println(e.getMessage());
@@ -216,7 +165,7 @@ public class Controller {
         do {
             System.out.println("Agilité du personnage ?         Vous avez " + maxPoint + "points à distribuer.");
             try {
-                joueur.setAgilite(this.saisirInt());
+                joueur.setAgilite(sc.saisirInt());
                 continuerSaisie = false;
             } catch (wrongStatInitException e) {
                 System.out.println(e.getMessage());
@@ -238,7 +187,7 @@ public class Controller {
         do {
             System.out.println("Inteligence du personnage ?     Vous avez " + maxPoint + "points à distribuer.");
             try {
-                joueur.setIntelligence(this.saisirInt());
+                joueur.setIntelligence(sc.saisirInt());
                 continuerSaisie = false;
             } catch (wrongStatInitException e) {
                 System.out.println(e.getMessage());
@@ -247,6 +196,7 @@ public class Controller {
         } while (continuerSaisie);
         return joueur;
     }
+
     //Choix de gameplay
     /**
      * Méthode de Choix de l'attaque du personnage attaquant
@@ -259,7 +209,7 @@ public class Controller {
         int damage = 0;
         do {
             System.out.println(joueur.getName() + " (" + joueur.getVie() + " Vitalité) Veuillez choisir votre Action (1: Attaque de base: " + joueur.getAttaqueBasique() + "    ; 2: Attaque Spéciale: " + joueur.getAttaqueSpeciale() + ".)");
-            int choix = this.saisirInt();
+            int choix = sc.saisirInt();
             switch (choix) {
                 case 1:
                     continuerSaisie = false;
@@ -274,7 +224,6 @@ public class Controller {
                     System.out.println("Mauvaise Saisie !!!");
                     break;
             }
-            Controller.sc.reset();
         } while (continuerSaisie);
         return damage;
     }
@@ -285,7 +234,7 @@ public class Controller {
      */
     private Boolean askForReloadFight() {
         System.out.println("Voulez-vous rejouer?");
-        Boolean rejouer = this.demandeOuiNon();
+        Boolean rejouer = sc.demandeOuiNon();
         return rejouer;
     }
 
@@ -380,4 +329,5 @@ public class Controller {
             rejouer = this.askForReloadFight();
         } while (rejouer);
     }
+
 }
