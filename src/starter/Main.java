@@ -1,8 +1,11 @@
 package starter;
 
+import ui.Controller;
+
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        Controller ui = new Controller();
+        ui.sequencePrincipal();
     }
 }
