@@ -1,5 +1,6 @@
 package ui;
 
+import Exception.deadException;
 import Exception.wrongStatInitException;
 import model.Guerrier;
 import model.Mage;
@@ -248,6 +249,37 @@ public class Controller {
     }
     //Choix de gameplay
     /**
+     * Méthode de Choix de l'attaque du personnage attaquant
+     *
+     * @param joueur : Personnage attaquant
+     * @return : Dommage généré par l'attaque
+     */
+    private int choixAttaque(Personnage joueur) {
+        boolean continuerSaisie;
+        int damage = 0;
+        do {
+            System.out.println(joueur.getName() + " (" + joueur.getVie() + " Vitalité) Veuillez choisir votre Action (1: Attaque de base: " + joueur.getAttaqueBasique() + "    ; 2: Attaque Spéciale: " + joueur.getAttaqueSpeciale() + ".)");
+            int choix = this.saisirInt();
+            switch (choix) {
+                case 1:
+                    continuerSaisie = false;
+                    damage = joueur.attaqueBasique();
+                    break;
+                case 2:
+                    continuerSaisie = false;
+                    damage = joueur.attaqueSpeciale();
+                    break;
+                default:
+                    continuerSaisie = true;
+                    System.out.println("Mauvaise Saisie !!!");
+                    break;
+            }
+            Controller.sc.reset();
+        } while (continuerSaisie);
+        return damage;
+    }
+
+    /**
      * Demande pour recommencer le combat
      * @return : true si oui; false si non
      */
@@ -295,11 +327,41 @@ public class Controller {
         return joueur;
     }
 
+    /**
+     * Phase de Combat entre les 2 personnage
+     *
+     * @param joueur1 : Personnage attaquant en premier
+     * @param joueur2 : Personnage attaquant en second
+     * @return Personnage ayant gagné le combat
+     */
+    private Personnage combat(Personnage joueur1, Personnage joueur2) {
+        Personnage winner = null;
+        int damage;
+        do {
+            //Tour Joueur1
+            damage = this.choixAttaque(joueur1);
+            System.out.println(joueur2.getName() + ": Perd " + damage + " points de vie");
+            try { joueur2.subitDegat(damage);
+            } catch (deadException e) {
+                System.out.println(e.getMessage());
+                winner = joueur1;
+                break;}
+            //Tour Joueur2
+            damage = this.choixAttaque(joueur2);
+            System.out.println(joueur1.getName() + ": Perd " + damage + " points de vie");
+            try { joueur1.subitDegat(damage);
+            } catch (deadException e) {
+                System.out.println(e.getMessage());
+                winner = joueur2;
+                break;}
+        } while (winner == null);
+        return winner;
+    }
     /////////////////////////////////////////////////////////////////////////////////
     /**
      * Sequence principal: Combat entre joueur 1 et joueur 2
      */
-    public void sequencePrincipal(){
+    public void sequencePrincipal() {
         Personnage winner = null;
         Boolean rejouer = false;
 
@@ -312,11 +374,10 @@ public class Controller {
             Personnage joueur1 = this.creerPersonnage("Joueur 1");
             Personnage joueur2 = this.creerPersonnage("Joueur 2");
             //FIGHT!!!!
-            winner = null;
+            winner = this.combat(joueur1, joueur2);
             this.affichageWinner(winner);
             //RECOMMENCER?
             rejouer = this.askForReloadFight();
         } while (rejouer);
-
     }
 }
