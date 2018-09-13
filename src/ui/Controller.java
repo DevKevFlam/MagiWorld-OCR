@@ -1,6 +1,10 @@
 package ui;
 
+import Exception.wrongStatInitException;
+import model.Guerrier;
+import model.Mage;
 import model.Personnage;
+import model.Rodeur;
 
 import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
@@ -20,7 +24,6 @@ public class Controller {
 
     /////////////////////////////////////////////////////////////////////////////////
     //Methodes de saisie
-
     /**
      * Boucle de saisie d'un Entier
      *
@@ -68,22 +71,25 @@ public class Controller {
         return ok;
     }
 
+    /////////////////////////////////////////////////////////////////////////////////
+    //Methode de test
     /**
-     * Affichage des messages de fin de combat: Vainqueur et traitemant du suicide du guerrier
-     * @param winner : Gagnant du Combat
+     * Test de Verification du total de point Atribuer lors de la création du Personnage
+     *
+     * @param pointRestant : Nombre de points restant à Attribuer
+     * @return true si la somme des points de compétence dépasse les point max
      */
-    private void affichageWinner(Personnage winner){
-
-        System.out.println(winner.getName() + " a Gagné le combat!!!");
-        if (winner.getVie() == 0 || winner.getClass().getSimpleName() == "Guerrier") {
-            System.out.println("              MAIS               ");
-            System.out.println(winner.getName() + " s'est suicidé lors de rage frénétique !!!");
+    private boolean depasseMax(int pointRestant) {
+        Boolean verifPoint = false;
+        if (pointRestant < 0) {
+            verifPoint = true;
+            System.out.println("La somme de vos points de force , d'agilité et d'inteligence ne peuvent pas exéder votre niveau... ");
         }
+        return verifPoint;
     }
 
     /////////////////////////////////////////////////////////////////////////////////
     //Methodes d'affichage
-
     /**
      * Affichage du Bandeau de Bienvenue
      */
@@ -103,8 +109,144 @@ public class Controller {
         System.out.println(LINE_SEPARATOR);
     }
 
+    /**
+     * Affichage des messages de fin de combat: Vainqueur et traitemant du suicide du guerrier
+     * @param winner : Gagnant du Combat
+     */
+    private void affichageWinner(Personnage winner){
+
+        System.out.println(winner.getName() + " a Gagné le combat!!!");
+        if (winner.getVie() == 0 || winner.getClass().getSimpleName() == "Guerrier") {
+            System.out.println("              MAIS               ");
+            System.out.println(winner.getName() + " s'est suicidé lors de rage frénétique !!!");
+        }
+    }
+
     /////////////////////////////////////////////////////////////////////////////////
     //Methodes de Choix
+    //Choix de Création
+    /**
+     * Choix de la Classe du personnage
+     *
+     * @return : Personnage transtypé en la classe de personnage choisie
+     */
+    private Personnage choixClasse() {
+        boolean continuerSaisie = true;
+        int choix = 0;
+        Personnage joueur = null;
+        do {
+            System.out.println("Veuillez choisir la classe de votre personnage (1: Guerrier, 2: Rôdeur, 3: Mage.)");
+            choix = this.saisirInt();
+            switch (choix) {
+                case 1:
+                    continuerSaisie = false;
+                    joueur = new Guerrier();
+                    break;
+                case 2:
+                    continuerSaisie = false;
+                    joueur = new Rodeur();
+                    break;
+                case 3:
+                    continuerSaisie = false;
+                    joueur = new Mage();
+                    break;
+                default:
+                    continuerSaisie = true;
+                    System.out.println("Mauvaise Saisie !!!");
+                    break;
+            }
+            Controller.sc.reset();
+        } while (continuerSaisie);
+        return joueur;
+    }
+
+    /**
+     * Méthode de choix du niveau du personnage
+     *
+     * @param joueur : joueur à modifier
+     * @return : joueur modifié
+     */
+    private Personnage choixNiveau(Personnage joueur) {
+        Boolean continuerSaisie = true;
+        do {
+            System.out.println("Niveau du personnage ? (de 1 à 100)");
+            try {
+                joueur.setNiveau(this.saisirInt());
+                continuerSaisie = false;
+            } catch (wrongStatInitException e) {
+                System.out.println(e.getMessage());
+                continuerSaisie = true;
+            }
+        } while (continuerSaisie);
+        return joueur;
+    }
+
+    /**
+     * Méthode de Choix des points de Force du Personnage
+     *
+     * @param joueur   : joueur à modifier
+     * @param maxPoint : Point a distribué
+     * @return joueur modifié
+     */
+    private Personnage choixForce(Personnage joueur, int maxPoint) {
+        Boolean continuerSaisie = true;
+        do {
+            System.out.println("Force du personnage ?           Vous avez " + maxPoint + "points à distribuer.");
+            try {
+                joueur.setForce(this.saisirInt());
+                continuerSaisie = false;
+            } catch (wrongStatInitException e) {
+                System.out.println(e.getMessage());
+                continuerSaisie = true;
+            }
+        } while (continuerSaisie);
+        return joueur;
+    }
+
+    /**
+     * Méthode de Choix des points d'Agilité du Personnage
+     *
+     * @param joueur   : joueur à modifier
+     * @param maxPoint : Point à distribuer
+     * @return joueur modifié
+     */
+    private Personnage choixAgilite(Personnage joueur, int maxPoint) {
+        Boolean continuerSaisie = true;
+        do {
+            System.out.println("Agilité du personnage ?         Vous avez " + maxPoint + "points à distribuer.");
+            try {
+                joueur.setAgilite(this.saisirInt());
+                continuerSaisie = false;
+            } catch (wrongStatInitException e) {
+                System.out.println(e.getMessage());
+                continuerSaisie = true;
+            }
+        } while (continuerSaisie);
+        return joueur;
+    }
+
+    /**
+     * Méthode de Choix des points d'Intelligence du Personnage
+     *
+     * @param joueur   : joueur à modifier
+     * @param maxPoint : Point à distribuer
+     * @return joueur modifié
+     */
+    private Personnage choixInteligence(Personnage joueur, int maxPoint) {
+        Boolean continuerSaisie = true;
+        do {
+            System.out.println("Inteligence du personnage ?     Vous avez " + maxPoint + "points à distribuer.");
+            try {
+                joueur.setIntelligence(this.saisirInt());
+                continuerSaisie = false;
+            } catch (wrongStatInitException e) {
+                System.out.println(e.getMessage());
+                continuerSaisie = true;
+            }
+        } while (continuerSaisie);
+        return joueur;
+    }
+    //Choix de gameplay
     /**
      * Demande pour recommencer le combat
      * @return : true si oui; false si non
@@ -114,6 +256,45 @@ public class Controller {
         Boolean rejouer = this.demandeOuiNon();
         return rejouer;
     }
+
+    /////////////////////////////////////////////////////////////////////////////////
+    //Phase de Gameplay
+    /**
+     * Méthode de création du Personnage
+     *
+     * @param name : Nom du Personnage
+     * @return Personnage généré
+     */
+    private Personnage creerPersonnage(String name) {
+        Boolean verifPoints;
+        System.out.println("Création du personnage " + name);
+        //Classe
+        Personnage joueur = choixClasse();
+        joueur.setName(name);
+        //Niveau
+        joueur = this.choixNiveau(joueur);
+        int maxPoint = joueur.getNiveau();
+        //Force
+        do {joueur = this.choixForce(joueur, maxPoint);
+            verifPoints = this.depasseMax(maxPoint - joueur.getForce());
+        } while (verifPoints);
+        maxPoint -= joueur.getForce();
+        ////////////////////////////////////////////////
+        //Agilité
+        do {joueur = this.choixAgilite(joueur, maxPoint);
+            verifPoints = this.depasseMax(maxPoint - joueur.getAgilite());
+        } while (verifPoints);
+        maxPoint -= joueur.getAgilite();
+        //Intelligence
+        do {joueur = this.choixInteligence(joueur, maxPoint);
+            verifPoints = this.depasseMax(maxPoint - joueur.getIntelligence());
+        } while (verifPoints);
+        maxPoint -= joueur.getIntelligence();
+        //Catch phrase
+        System.out.println(joueur.getCatchPhrase());
+        return joueur;
+    }
+
     /////////////////////////////////////////////////////////////////////////////////
     /**
      * Sequence principal: Combat entre joueur 1 et joueur 2
@@ -128,13 +309,13 @@ public class Controller {
                 this.afficherReplay();
             }
             //Creation des personnage
-            Personnage joueur1 = null;
-            Personnage joueur2 = null;
+            Personnage joueur1 = this.creerPersonnage("Joueur 1");
+            Personnage joueur2 = this.creerPersonnage("Joueur 2");
             //FIGHT!!!!
             winner = null;
             this.affichageWinner(winner);
             //RECOMMENCER?
-            rejouer = true;
+            rejouer = this.askForReloadFight();
         } while (rejouer);
 
     }
