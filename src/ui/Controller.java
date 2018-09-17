@@ -14,12 +14,8 @@ import java.util.Scanner;
 public class Controller {
 
     private Saisie sc = new Saisie();
+    private Affichage aff = new Affichage();
 
-
-    /**
-     * Constante de Séparation Console
-     */
-    private static final String LINE_SEPARATOR = "+------------------------------------------------------------+";
 
     /////////////////////////////////////////////////////////////////////////////////
     //Methode de test
@@ -38,39 +34,6 @@ public class Controller {
         return verifPoint;
     }
 
-    /////////////////////////////////////////////////////////////////////////////////
-    //Methodes d'affichage
-    /**
-     * Affichage du Bandeau de Bienvenue
-     */
-    private void afficherBonjour() {
-        System.out.println(LINE_SEPARATOR);
-        System.out.println("                       Bienvenu");
-        System.out.println("              Vous entrez dans l'arène !!!");
-        System.out.println(LINE_SEPARATOR);
-    }
-
-    /**
-     * Affichage du Bandeau de Nouvelle Partie
-     */
-    private void afficherReplay() {
-        System.out.println(LINE_SEPARATOR);
-        System.out.println("        Vous entrez de nouveau dans l'arène !!!");
-        System.out.println(LINE_SEPARATOR);
-    }
-
-    /**
-     * Affichage des messages de fin de combat: Vainqueur et traitemant du suicide du guerrier
-     * @param winner : Gagnant du Combat
-     */
-    private void affichageWinner(Personnage winner){
-
-        System.out.println(winner.getName() + " a Gagné le combat!!!");
-        if (winner.getVie() == 0 || winner.getClass().getSimpleName() == "Guerrier") {
-            System.out.println("              MAIS               ");
-            System.out.println(winner.getName() + " s'est suicidé lors de rage frénétique !!!");
-        }
-    }
 
     /////////////////////////////////////////////////////////////////////////////////
     //Methodes de Choix
@@ -314,17 +277,17 @@ public class Controller {
         Personnage winner = null;
         Boolean rejouer = false;
 
-        this.afficherBonjour();
+        aff.afficherBonjour();
         do {
             if (rejouer) {
-                this.afficherReplay();
+                aff.afficherReplay();
             }
             //Creation des personnage
             Personnage joueur1 = this.creerPersonnage("Joueur 1");
             Personnage joueur2 = this.creerPersonnage("Joueur 2");
             //FIGHT!!!!
             winner = this.combat(joueur1, joueur2);
-            this.affichageWinner(winner);
+            aff.affichageWinner(winner);
             //RECOMMENCER?
             rejouer = this.askForReloadFight();
         } while (rejouer);
